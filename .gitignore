@@ -36,3 +36,13 @@ pnpm-debug.log*
 
 # Docker volumes and temp files
 .docker/
+
+# TypeScript build cache
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# AI Assistants & Local IDE metadata
+.agents/
+.claude/
+.windsurf/
+skills-lock.json
