@@ -6,21 +6,36 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "prisma:migrate:dev": "npx prisma format && npx prisma generate && npx prisma migrate dev",
+    "prepare": "husky"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.9.1",
+    "@prisma/client": "^7.9.1",
+    "bullmq": "^6.1.1",
+    "ioredis": "^6.0.0",
     "next": "16.3.0",
+    "pg": "^8.23.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
     "@tailwindcss/postcss": "^4",
+    "@types/ioredis": "^4.28.10",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.9.6",
+    "prettier-plugin-prisma": "^5.0.0",
+    "prisma": "^7.9.1",
     "tailwindcss": "^4",
+    "tsx": "^4.23.12",
     "typescript": "^5"
   }
 }
