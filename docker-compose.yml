@@ -99,6 +99,27 @@ services:
     networks:
       - app-network
 
+  board:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: bull_board_ui
+    command: npx tsx workers/board.ts
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - BOARD_PORT=3001
+    depends_on:
+      redis:
+        condition: service_started
+    networks:
+      - app-network
+
 volumes:
   postgres_data:
   redis_data:
