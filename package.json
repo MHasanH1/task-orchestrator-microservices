@@ -5,9 +5,10 @@
   "scripts": {
     "test": "echo \"No tests specified\"",
     "dev": "next dev",
-    "build": "next build",
+    "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
+    "type-check": "tsc --noEmit",
     "prisma:migrate:dev": "npx prisma format && npx prisma generate && npx prisma migrate dev",
     "prepare": "husky"
   },
