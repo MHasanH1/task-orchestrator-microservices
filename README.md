@@ -1,36 +1,128 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Task Orchestrator & Distributed Worker Architecture
 
-## Getting Started
+A full-stack, enterprise-grade task orchestration and monitoring platform built with **Next.js (App Router)**, **PostgreSQL (Prisma 7)**, **Redis (BullMQ)**, and **Nginx**. Containerized and orchestrated using **Docker Compose** with a fully automated **GitHub Actions CI/CD Pipeline**.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🏗️ System Architecture
+
+```text
+                       +-----------------------------+
+                       |    Client Browser / HTTP    |
+                       +--------------+--------------+
+                                      |
+                                      v (Port 80)
+                       +--------------+--------------+
+                       |   Nginx Reverse Proxy &     |
+                       |       Rate Limiting         |
+                       +--------------+--------------+
+                                      |
+                                      v (Internal Network)
+                       +--------------+--------------+
+                       |   Next.js Full-Stack App    |
+                       | (App Router + Server Actions|
+                       +-------+--------------+------+
+                               |              |
+              (Cache Queries)  |              |  (Push Background Jobs)
+                               v              v
+         +---------------------+----+    +----+------------------------+
+         |       Redis Cache        |    |      Redis Task Queue       |
+         |     (Cache-Aside)        |    |          (BullMQ)           |
+         +--------------------------+    +--------------+--------------+
+                                                        |
+                                                        v (Consume Jobs)
+                                         +--------------+--------------+
+                                         |    Node.js Background       |
+                                         |      Worker Process         |
+                                         +--------------+--------------+
+                                                        |
+                                                        v (Persist Status)
+                                         +--------------+--------------+
+                                         |    PostgreSQL Database      |
+                                         |         (Prisma 7)          |
+                                         +-----------------------------+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⚡ Core Features & Engineering Highlights
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Multi-Stage Docker Builds:** Optimized production container size using Next.js `standalone` output and non-root users.
+- **Asynchronous Background Processing:** Decoupled long-running operations from HTTP requests via Redis queues and BullMQ workers.
+- **Cache-Aside Invalidation:** Sub-millisecond response latency for recurring read operations with automatic cache eviction on mutations.
+- **Edge Gateway & Security:** Nginx reverse proxy with gzip compression, request headers sanitization, and IP-based rate limiting (`10 req/sec`).
+- **Prisma 7 ORM Integration:** Configured with modern TypeScript configuration (`prisma.config.ts`) and zero-downtime auto-migrations.
+- **Observability & Diagnostics:** Live queue dashboard (Bull-Board) on dedicated port and diagnostic `/api/health` system probes.
+- **CI/CD Automation:** GitHub Actions workflow verifying TypeScript compilation, ESLint rules, and Docker container builds on every PR.
+- **Granular Git History:** Enforced Conventional Commits with Husky and Commitlint hooks alongside GitHub Flow branching.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Layer               | Technology                                     |
+| :------------------ | :--------------------------------------------- |
+| **Framework**       | Next.js 15+ (React 19, App Router, TypeScript) |
+| **Database & ORM**  | PostgreSQL 15, Prisma 7                        |
+| **Queue & Caching** | Redis (ioredis, BullMQ)                        |
+| **Reverse Proxy**   | Nginx Alpine                                   |
+| **Monitoring**      | Bull-Board UI, Custom Healthcheck API          |
+| **DevOps & CI**     | Docker, Docker Compose, GitHub Actions, Husky  |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🚦 Quick Start & Local Setup
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 1. Prerequisites
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Docker Desktop](https://www.docker.com/) & Docker Compose
+- Node.js 22+
+
+### 2. Clone and Setup Environment
+
+```bash
+git clone [https://github.com/](https://github.com/)<YOUR-USERNAME>/<YOUR-REPO-NAME>.git
+cd <YOUR-REPO-NAME>
+```
+
+### 3. Spin up Containers
+
+```bash
+docker compose up --build -d
+```
+
+### 4. Available Endpoints
+
+- **Web Application:** `http://localhost`
+- **Queue Monitoring Dashboard:** `http://localhost:3001/admin/queues`
+- **PgAdmin Database UI:** `http://localhost:5050` (`admin@admin.com` / `admin`)
+- **System Health Diagnostics:** `http://localhost/api/health`
+
+---
+
+## 🧪 CI Verification & Quality Gates
+
+Run local checks identical to the CI pipeline:
+
+```bash
+# Validate TypeScript compilation
+npm run type-check
+
+# Run Next.js Linter
+npm run lint
+
+# Verify container build integrity
+docker compose build
+```
+
+---
+
+## 🌿 Git Branching & Contribution Workflow
+
+This repository follows **GitHub Flow**:
+
+1. Branch out from `dev`: `git checkout -b feature/<feature-name>`
+2. Follow Conventional Commits: `feat(scope): message` or `fix(scope): message`
+3. Push and open a Pull Request targeting `dev`
+4. Automated GitHub Actions CI executes build and type validation
+5. Merge into `dev` and release to `main`
