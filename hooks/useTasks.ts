@@ -22,6 +22,7 @@ export function useTasks(pollIntervalMs: number = 2000) {
         setError(data.error || "Failed to fetch tasks");
       }
     } catch (err) {
+      console.log(err);
       setError("Network error while fetching tasks");
     } finally {
       setIsLoading(false);
@@ -29,9 +30,26 @@ export function useTasks(pollIntervalMs: number = 2000) {
   }, []);
 
   useEffect(() => {
-    fetchTasks();
-    const timer = setInterval(fetchTasks, pollIntervalMs);
-    return () => clearInterval(timer);
+    let isMounted = true;
+
+    const runFetch = async () => {
+      if (isMounted) {
+        await fetchTasks();
+      }
+    };
+
+    runFetch();
+
+    const intervalId = setInterval(() => {
+      if (isMounted) {
+        fetchTasks();
+      }
+    }, pollIntervalMs);
+
+    return () => {
+      isMounted = false;
+      clearInterval(intervalId);
+    };
   }, [fetchTasks, pollIntervalMs]);
 
   const createTask = async (title: string): Promise<boolean> => {
@@ -51,6 +69,7 @@ export function useTasks(pollIntervalMs: number = 2000) {
       }
       return false;
     } catch (err) {
+      console.log(err);
       setError("Failed to dispatch task");
       return false;
     } finally {
