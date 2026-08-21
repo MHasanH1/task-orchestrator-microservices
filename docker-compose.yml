@@ -2,7 +2,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: nextjs_app
     ports:
       - "3000"
@@ -23,7 +23,7 @@ services:
   worker:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.worker
     container_name: task_worker
     command: npx tsx workers/taskWorker.ts
     volumes:
@@ -102,7 +102,7 @@ services:
   board:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.board
     container_name: bull_board_ui
     command: npx tsx workers/board.ts
     ports:

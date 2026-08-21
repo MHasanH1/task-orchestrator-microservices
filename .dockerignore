@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.husky
+npm-debug.log
+Dockerfile*
+docker-compose*
+.env*
+README.md

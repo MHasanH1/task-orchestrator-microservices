@@ -1,0 +1,28 @@
+# Stage 1: Build & Transpile TypeScript
+FROM node:22-alpine AS builder
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+
+# Bundle Worker into single JS file
+RUN npx prisma generate
+RUN npx --yes esbuild workers/taskWorker.ts --bundle --platform=node --target=node22 --outfile=dist/worker.js --packages=external
+
+# Stage 2: Minimal Production Runner
+FROM node:22-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Install production dependencies and generate Prisma Client
+COPY package.json package-lock.json ./
+COPY prisma ./prisma
+RUN npm ci --omit=dev --ignore-scripts && npx prisma generate && npm cache clean --force
+
+# Copy bundled worker script
+COPY --from=builder /app/dist ./dist
+
+CMD ["node", "dist/worker.js"]
