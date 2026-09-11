@@ -4,12 +4,10 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: nextjs_app
-    ports:
-      - "3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/.next
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
+    #   - /app/.next
     environment:
       - DATABASE_URL=postgresql://postgres:hasan1234@db:5432/nextdb?schema=public
       - REDIS_URL=redis://redis:6379

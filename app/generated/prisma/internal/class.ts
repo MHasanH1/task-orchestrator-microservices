@@ -20,7 +20,7 @@ const config: runtime.GetPrismaClientConfig = {
   "clientVersion": "7.9.1",
   "engineVersion": "e922089b7d7502aff4249d5da3420f6fa55fc6ad",
   "activeProvider": "postgresql",
-  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../app/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nenum TaskStatus {\n  PENDING\n  PROCESSING\n  COMPLETED\n  FAILED\n}\n\nmodel Task {\n  id        String     @id @default(uuid())\n  title     String\n  status    TaskStatus\n  result    String?\n  completed Boolean    @default(false)\n  createdAt DateTime   @default(now())\n  updatedAt DateTime   @updatedAt\n}\n",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../app/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nenum TaskStatus {\n  PENDING\n  PROCESSING\n  COMPLETED\n  FAILED\n}\n\nmodel Task {\n  id        String     @id @default(uuid())\n  title     String\n  status    TaskStatus @default(PENDING)\n  result    String?\n  completed Boolean    @default(false)\n  createdAt DateTime   @default(now())\n  updatedAt DateTime   @updatedAt\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},

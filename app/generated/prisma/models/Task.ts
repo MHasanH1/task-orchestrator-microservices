@@ -252,7 +252,7 @@ export type TaskScalarWhereWithAggregatesInput = {
 export type TaskCreateInput = {
   id?: string
   title: string
-  status: $Enums.TaskStatus
+  status?: $Enums.TaskStatus
   result?: string | null
   completed?: boolean
   createdAt?: Date | string
@@ -262,7 +262,7 @@ export type TaskCreateInput = {
 export type TaskUncheckedCreateInput = {
   id?: string
   title: string
-  status: $Enums.TaskStatus
+  status?: $Enums.TaskStatus
   result?: string | null
   completed?: boolean
   createdAt?: Date | string
@@ -292,7 +292,7 @@ export type TaskUncheckedUpdateInput = {
 export type TaskCreateManyInput = {
   id?: string
   title: string
-  status: $Enums.TaskStatus
+  status?: $Enums.TaskStatus
   result?: string | null
   completed?: boolean
   createdAt?: Date | string
