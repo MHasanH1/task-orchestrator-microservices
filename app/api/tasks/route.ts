@@ -8,6 +8,7 @@ import {
 } from "@/utils/responseHandler";
 import { redis } from "@/lib/redis";
 import { taskQueue } from "@/lib/queue";
+import { logger } from "@/lib/logger";
 
 const CACHE_KEY = "tasks:all";
 
@@ -33,6 +34,7 @@ export async function GET() {
 
     return success({ data: tasks });
   } catch (error: unknown) {
+    logger.error("Error fetching tasks:", { error });
     return serverError({
       error: "Error fetching tasks",
       details: getErrorMessage(error),
@@ -65,6 +67,7 @@ export async function POST(request: Request) {
 
     return created({ data: newTask });
   } catch (error: unknown) {
+    logger.error("Error while creating a new task:", { error });
     return serverError({
       error: "Error while creating a new task",
       details: getErrorMessage(error),
@@ -91,6 +94,7 @@ export async function PATCH(request: Request) {
 
     return success({ data: updatedTask });
   } catch (error: unknown) {
+    logger.error("Error while updating a task:", { error });
     return serverError({
       error: "Error while updating a task",
       details: getErrorMessage(error),
@@ -110,6 +114,7 @@ export async function DELETE() {
 
     return success({ data: deletedTask });
   } catch (error: unknown) {
+    logger.error("Error while deleting a task:", { error });
     return serverError({
       error: "Error while deleting a task",
       details: getErrorMessage(error),
