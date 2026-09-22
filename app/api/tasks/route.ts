@@ -48,21 +48,36 @@ export async function POST(request: Request) {
     const body = (await request.json()) as PostReqData;
     const { title } = body;
 
-    if (!title) {
+    if (!title?.trim()) {
       return badRequest({ error: "Title is required" });
     }
 
     const newTask = await prisma.task.create({
       data: {
-        title,
+        title: title.trim(),
         status: "PENDING",
       },
     });
 
-    await taskQueue.add("process-task", {
-      taskId: newTask.id,
-      title: newTask.title,
-    });
+    try {
+      await taskQueue.add("process-task", {
+        taskId: newTask.id,
+        title: newTask.title,
+      });
+    } catch (queueError) {
+      try {
+        await prisma.task.delete({
+          where: { id: newTask.id },
+        });
+      } catch (cleanupError) {
+        logger.error("Failed to cleanup task after queue error:", {
+          taskId: newTask.id,
+          error: cleanupError,
+        });
+      }
+
+      throw queueError;
+    }
 
     await redis.del(CACHE_KEY);
 
