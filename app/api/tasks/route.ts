@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { PatchReqData, PostReqData } from "@/types/taskAPI";
+import { PostReqData } from "@/types/taskAPI";
 import {
   badRequest,
   created,
@@ -23,6 +23,7 @@ export async function GET() {
     if (cachedTasks) {
       return success({
         data: JSON.parse(cachedTasks),
+        source: "redis",
       });
     }
 
@@ -32,7 +33,7 @@ export async function GET() {
 
     await redis.set(CACHE_KEY, JSON.stringify(tasks), "EX", 60);
 
-    return success({ data: tasks });
+    return success({ data: tasks, source: "database" });
   } catch (error: unknown) {
     logger.error("Error fetching tasks:", { error });
     return serverError({
@@ -70,33 +71,6 @@ export async function POST(request: Request) {
     logger.error("Error while creating a new task:", { error });
     return serverError({
       error: "Error while creating a new task",
-      details: getErrorMessage(error),
-    });
-  }
-}
-
-export async function PATCH(request: Request) {
-  try {
-    const id = "";
-    const body = (await request.json()) as PatchReqData;
-
-    const { title, completed } = body;
-
-    const updatedTask = await prisma.task.update({
-      where: {
-        id,
-      },
-      data: {
-        title,
-        completed,
-      },
-    });
-
-    return success({ data: updatedTask });
-  } catch (error: unknown) {
-    logger.error("Error while updating a task:", { error });
-    return serverError({
-      error: "Error while updating a task",
       details: getErrorMessage(error),
     });
   }
